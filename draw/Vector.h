@@ -14,7 +14,8 @@ Vector operator*(const Vector&, float);
 Vector operator*(float, const Vector&);
 Vector operator+(const Vector&, const Vector&);
 Vector operator-(const Vector&, const Vector&);
+
 Vector cross(const Vector&, const Vector&);
+Vector norm(const Vector&);
 float dot(const Vector&, const Vector&);
 float mag(const Vector&);
-Vector norm(const Vector&);

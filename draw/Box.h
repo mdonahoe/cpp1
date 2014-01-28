@@ -3,14 +3,19 @@
 
 class Box {
     public:
-        Box(float l, float w, float h);
+        Box(float, float, float);
         float volume();
-        void SetOrigin(const Vector &origin);
+        void SetOrigin(const Vector&);
+        void SetRoll(float);
+        void SetYaw(float);
         void draw();
 
     private:
         float m_length;
-        float m_width;
         float m_height;
+        float m_width;
+        float m_roll;
+        float m_pitch;
+        float m_yaw;
         Vector m_origin;
 };
