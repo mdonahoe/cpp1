@@ -34,7 +34,14 @@ void display() {
         it->draw();
     }
 
-    // quad.control();
+    Vector3f xaxis = quad.m_body.R.col(0);
+    xaxis.normalize();
+    Vector3f forward(0,0,1);
+    float d = forward.dot(xaxis);
+    cout << "d = " << d << endl;
+    float c = -0.1 * (1 - d);
+    quad.control(1 + c, 1 - c,
+                 1 - c, 1 + c);
     quad.m_body.draw();
     quad.m_body.update(dt);
 
@@ -84,6 +91,7 @@ void init() {
          0, 0, 1;
 
     RigidBody obj(2, I);
+    obj.x << 3, 0, 0;
     bodies.push_back(obj);
 }
 

@@ -8,7 +8,7 @@
 using namespace std;
 
 static int ntimes = 0;
-const static Vector3f GRAVITY(0.0, -10.0, 0.0);
+const static Vector3f GRAVITY(0.0, -4.0, 0.0);
 
 
 RigidBody::RigidBody(float m, const Matrix3f &I){
