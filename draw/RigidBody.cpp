@@ -10,6 +10,7 @@ using namespace std;
 static int ntimes = 0;
 const static Vector3f GRAVITY(0.0, -10.0, 0.0);
 
+
 RigidBody::RigidBody(float m, const Matrix3f &I){
     mass = m;
     Ibody = I;
@@ -42,15 +43,13 @@ void RigidBody::update(float dt){
 
     x += dt * v;
     R += dt * (Skew(omega) * R);
-    if (++ntimes == 3){
-        ntimes = 0;
-        renormalize();
-    }
+    renormalize();
 
     // reset computed values (is there a better way to do this)
     force = GRAVITY;
     torque = Vector3f(0.0, 0.0, 0.0);
 };
+
 
 Matrix3f Skew(const Vector3f &v){
     Matrix3f out;
@@ -60,10 +59,12 @@ Matrix3f Skew(const Vector3f &v){
     return out;
 };
 
+
 // inertia tensor of block on page 27 (only diagonal terms)
 void RigidBody::AddTorque(const Vector3f& t){
     torque += t;
 };
+
 
 void RigidBody::AddBodyForce(const Vector3f& f, const Vector3f& r){
     // needs to be transformed from body to world coordinates
@@ -73,6 +74,7 @@ void RigidBody::AddBodyForce(const Vector3f& f, const Vector3f& r){
     force += world_f;
     torque += world_r.cross(world_f);
 };
+
 
 void RigidBody::draw(){
     // cout << R << endl << "----" <<  endl;
@@ -93,10 +95,10 @@ void RigidBody::draw(){
     m[10] = R(2,2);
     m[11] = 0.0;
 
-    m[12] = 0.0; 
-    m[13] = 0.0; 
-    m[14] = 0.0; 
-    m[15] = 1.0; 
+    m[12] = 0.0;
+    m[13] = 0.0;
+    m[14] = 0.0;
+    m[15] = 1.0;
 
     glPushMatrix();
     glTranslatef(x(0), x(1), x(2));
@@ -118,20 +120,29 @@ void RigidBody::draw(){
  * d/dt(L) = tau(t);
  */
 
-void printq(const Quaternionf &q){
-    cout << "quat = " << q.x() << "," << q.y() << "," << q.z() << "," << q.w() << endl;
+
+std::ostream& operator<<(std::ostream &out, Quaternionf &q){
+    out << "Q<" << q.w() << ","
+                << q.x() << ","
+                << q.y() << ","
+                << q.z() << ">";
+    return out;
 };
 
+
 void RigidBody::renormalize(){
+    // guard
+    if (++ntimes < 3) return;
+    ntimes = 0;
+
     // calculate how bad it is
     // cout << "det = " << R.determinant() << endl;
 
-    // I dont like this.
-    // I have seen other ones
+    // I dont like this... but it seems to work.
     Quaternionf q(R);
     q.normalize();
+    cout << q << endl;
     R = q.toRotationMatrix();
 
     // cout << "post det = " << R.determinant() << endl;
 };
-

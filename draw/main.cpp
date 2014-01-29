@@ -8,6 +8,7 @@
 #include <cmath>
 #include <vector>
 #include "RigidBody.h"
+#include "Quadrotor.h"
 #include <iostream>
 
 using namespace std;
@@ -18,6 +19,7 @@ GLfloat light_position[] = {10.0, 10.0, 10.0, 0.0};  /* Infinite light location.
 
 
 static vector<RigidBody> bodies;
+static Quadrotor quad = Quadrotor();
 static int t = 0;
 static float dt = 0.01;
 
@@ -28,13 +30,13 @@ void display() {
     //glRotatef(0.5,0,1,0);
 
     for (auto it=bodies.begin(); it!=bodies.end(); it++){
-        if (it->x(1) < 0){
-            // flip the vertical
-            it->P(1) = -(it->P(1));
-        }
         it->update(dt);
         it->draw();
     }
+
+    // quad.control();
+    quad.m_body.draw();
+    quad.m_body.update(dt);
 
     glutSwapBuffers();
     glutPostRedisplay();
@@ -75,25 +77,22 @@ void init() {
               0.0, 1.0, 0.0,   /* center */
               0.0, 1.0, 0.0);  /* up */
 
+
     Matrix3f I;
     I << 1, 0, 0,
          0, 1, 0,
          0, 0, 1;
 
-    RigidBody obj = RigidBody(2, I);
-    Vector3f f(0.0,500.0,0.0);
-    Vector3f r(2.0,0.0,0.0);
-    obj.AddBodyForce(f, r);
-
+    RigidBody obj(2, I);
     bodies.push_back(obj);
 }
 
 int main(int argc, char **argv) {
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  glutCreateWindow("red 3D lighted cube");
-  glutDisplayFunc(display);
-  init();
-  glutMainLoop();
-  return 0;             /* ANSI C requires main to return int. */
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutCreateWindow("red 3D lighted cube");
+    glutDisplayFunc(display);
+    init();
+    glutMainLoop();
+    return 0;             /* ANSI C requires main to return int. */
 }

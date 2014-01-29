@@ -27,13 +27,13 @@ public:
     void update(float);
     void draw();
 
-    /* constant */
+    /* Constant */
     float mass;
     Matrix3f Ibody, Ibodyinv;
 
     /* State */
-    Vector3f x;
     Matrix3f R;
+    Vector3f x;
     Vector3f P, L;
 
     /* Derived */
