@@ -1,6 +1,21 @@
 #include "RigidBody.h"
+#include <Eigen/LU>
 
-RigidBody::RigidBody(){};
+RigidBody::RigidBody(float m, const Matrix3f &I){
+    mass = m;
+    Ibody = I;
+    Ibodyinv = I.inverse();
+
+    R << 1, 0, 0,
+         0, 1, 0,
+         0, 0, 1;
+    x.setZero();
+    P.setZero();
+    L.setZero();
+
+    force.setZero();
+    torque.setZero();
+};
 
 const static Vector3f GRAVITY(0.0, -1.0, 0.0);
 
@@ -14,18 +29,18 @@ void RigidBody::update(float dt){
     omega = Iinv * L;
 
     x += dt * v;
-    R += dt * (Star(omega) * R);
+    R += dt * (Skew(omega) * R);
 
     // reset computed values (is there a better way to do this)
     force = GRAVITY;
     torque = Vector3f(0.0, 0.0, 0.0);
 };
 
-Matrix3f Star(const Vector3f &v){
+Matrix3f Skew(const Vector3f &v){
     Matrix3f out;
     out <<    0, -v[2],  v[1],
            v[2],     0, -v[0],
-          -v[1],  v[0],     0; 
+          -v[1],  v[0],     0;
     return out;
 };
 

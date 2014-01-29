@@ -11,7 +11,7 @@ using namespace Eigen;
 
 class RigidBody {
     public:
-        RigidBody();// moment of inertia, size?
+        RigidBody(float, const Matrix3f&);
         const Vector3f& GetPosition();
         void SetPosition(const Vector3f&);
 
@@ -56,4 +56,4 @@ class RigidBody {
          */
 };
 
-Matrix3f Star(const Vector3f&);
+Matrix3f Skew(const Vector3f&);
