@@ -3,11 +3,7 @@
 #include <Eigen/LU>
 #include "shape.h"
 #include "glheaders.h"
-#include <iostream>
 
-using namespace std;
-
-static int ntimes = 0;
 const static Vector3f GRAVITY(0.0, -4.0, 0.0);
 
 
@@ -32,7 +28,6 @@ RigidBody::RigidBody(float m, const Matrix3f &I){
 
 void RigidBody::update(float dt){
     //shitty euler integration
-    // cout << "force = " << force << endl << "---" << endl;
 
     P += dt * force;
     L += dt * torque;
@@ -77,7 +72,6 @@ void RigidBody::AddBodyForce(const Vector3f& f, const Vector3f& r){
 
 
 void RigidBody::draw(){
-    // cout << R << endl << "----" <<  endl;
     GLfloat m[16];
 
     m[0] = R(0,0);
@@ -131,18 +125,10 @@ std::ostream& operator<<(std::ostream &out, Quaternionf &q){
 
 
 void RigidBody::renormalize(){
-    // guard
-    if (++ntimes < 3) return;
-    ntimes = 0;
-
     // calculate how bad it is
-    // cout << "det = " << R.determinant() << endl;
 
     // I dont like this... but it seems to work.
     Quaternionf q(R);
     q.normalize();
-    cout << q << endl;
     R = q.toRotationMatrix();
-
-    // cout << "post det = " << R.determinant() << endl;
 };
