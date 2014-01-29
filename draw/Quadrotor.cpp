@@ -26,6 +26,10 @@ void Quadrotor::control(float a, float b, float c, float d){
     br << -L,H, W;
     cr <<  L,H,-W;
     dr << -L,H,-W;
+    af << 0, a, 0;
+    bf << 0, b, 0;
+    cf << 0, c, 0;
+    df << 0, d, 0;
 
     m_body.AddBodyForce(af, ar);
     m_body.AddBodyForce(bf, br);
@@ -34,6 +38,7 @@ void Quadrotor::control(float a, float b, float c, float d){
 
     // total torque
     Vector3f t;
-    t(1) = a + c - (b + d);
-    m_body.AddTorque(m_body.R * t);
+    t << 0, a + d - (b + c) , 0;
+    Vector3f world_t = m_body.R * t;
+    m_body.AddTorque(world_t);
 };
