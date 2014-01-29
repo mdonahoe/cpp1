@@ -1,35 +1,6 @@
-#include "glheaders.h"
 #include "Box.h"
-
-
-GLfloat n[6][3] = {  /* Normals for the 6 faces of a cube. */
-  {-1., 0.0, 0.0},
-  {0.0, 1.0, 0.0},
-  {1.0, 0.0, 0.0},
-  {0.0, -1., 0.0},
-  {0.0, 0.0, 1.0},
-  {0.0, 0.0, -1.}
-};
-
-GLint faces[6][4] = {  /* Vertex indices for the 6 faces of a cube. */
-  {0, 1, 2, 3},
-  {3, 2, 6, 7},
-  {7, 6, 5, 4},
-  {4, 5, 1, 0},
-  {5, 6, 2, 1},
-  {7, 4, 0, 3}
-};
-
-GLfloat v[8][3] = {
-    {-1, -1,  1},
-    {-1, -1, -1},
-    {-1,  1, -1},
-    {-1,  1,  1},
-    { 1, -1,  1},
-    { 1, -1, -1},
-    { 1,  1, -1},
-    { 1,  1,  1}
-};
+#include "shape.h"
+#include "glheaders.h"
 
 
 Box::Box(float l, float h, float w): m_length(l),
@@ -56,15 +27,8 @@ void Box::draw(){
     glScalef(0.5 * m_length, 0.5 * m_height, 0.5 * m_width);
   
 
-    for (int i = 0; i < 6; i++) {
-        glBegin(GL_QUADS);
-        glNormal3fv(&n[i][0]);
-        glVertex3fv(&v[faces[i][0]][0]);
-        glVertex3fv(&v[faces[i][1]][0]);
-        glVertex3fv(&v[faces[i][2]][0]);
-        glVertex3fv(&v[faces[i][3]][0]);
-        glEnd();
-    }
+    Cube();
+
     glPopMatrix();
 };
 

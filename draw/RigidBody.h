@@ -10,50 +10,42 @@
 using namespace Eigen;
 
 class RigidBody {
-    public:
-        RigidBody(float, const Matrix3f&);
-        const Vector3f& GetPosition();
-        void SetPosition(const Vector3f&);
+public:
+    RigidBody(float, const Matrix3f&);
+    const Vector3f& GetPosition();
+    void SetPosition(const Vector3f&);
 
-        const Vector3f& GetVelocity();
-        void SetVelocity(const Vector3f&);
+    const Vector3f& GetVelocity();
+    void SetVelocity(const Vector3f&);
 
-        void AddBodyForce(const Vector3f&, const Vector3f&);
-        // force is at a point?
-        //
-        void AddTorque(const Vector3f&);
-        // torque at a point?
+    void AddBodyForce(const Vector3f&, const Vector3f&);
+    // force is at a point?
 
-        void update(float);
+    void AddTorque(const Vector3f&);
+    // torque at a point?
 
-        /* constant */
-        float mass;
-        Matrix3f Ibody, Ibodyinv;
+    void update(float);
+    void draw();
 
-        /* State */
-        Vector3f x;
-        Matrix3f R;
-        Vector3f P, L;
+    /* constant */
+    float mass;
+    Matrix3f Ibody, Ibodyinv;
 
-        /* Derived */
-        Matrix3f Iinv;
-        Vector3f v, omega;
+    /* State */
+    Vector3f x;
+    Matrix3f R;
+    Vector3f P, L;
 
-        /* Computed */
-        Vector3f force, torque;
+    /* Derived */
+    Matrix3f Iinv;
+    Vector3f v, omega;
 
-        /*
-         * v(t) = P(t) / M;
-         * I(t) = R(t)*Ibody*R(t).transpose();
-         * I(t)^-1 = R(t)*(Ibody^-1)*R(t).transpose();
-         * w(t) = I(t).inv() * L(t);
-         * F(t) = total linear force
-         *
-         * d/dt(x) = v(t);
-         * d/dt(R) = w(t)*R(t);
-         * d/dt(P) = F(t);
-         * d/dt(L) = tau(t);
-         */
+    /* Computed */
+    Vector3f force, torque;
+
+private:
+    void renormalize();
+
 };
 
 Matrix3f Skew(const Vector3f&);
