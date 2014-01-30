@@ -1,72 +1,100 @@
 #include "Quadrotor.h"
+#include "glheaders.h"
+#include "shape.h"
 
-#include <iostream>
-using namespace std;
 
-Quadrotor::Quadrotor(): m_body(1, Matrix3f()) {
+Quadrotor::Quadrotor(float r): body(1, Matrix3f()), radius(r) {
     // now REALLY set it.
+    // take into account the radius and x-cross
     Matrix3f I;
     I << 1, 0, 0,
          0, 1, 0,
          0, 0, 1;
-    m_body = RigidBody(2, I);
+    body = RigidBody(2, I);
 };
 
-void Quadrotor::control(float a, float b, float c, float d){
+void Quadrotor::motors(float a, float b, float c, float d){
     Vector3f ar, br, cr, dr;
     Vector3f af, bf, cf, df;
 
-    float W = 1;
-    float H = 1;
-    float L = 1;
+    float R = radius; // rotor radius at edges
+    float H = 0; // rotors in plane with center of mass
 
     /*
-     * a b
-     * c d
+     *   a
+     * d   b
+     *   c
      */
 
-    ar <<  L,H, W;
-    br << -L,H, W;
-    cr <<  L,H,-W;
-    dr << -L,H,-W;
-    af << 0, a, 0;
-    bf << 0, b, 0;
-    cf << 0, c, 0;
-    df << 0, d, 0;
+    ar <<  R, H, 0;
+    br <<  0, H, R;
+    cr << -R, H, 0;
+    dr <<  0, H,-R;
 
-    m_body.AddBodyForce(af, ar);
-    m_body.AddBodyForce(bf, br);
-    m_body.AddBodyForce(cf, cr);
-    m_body.AddBodyForce(df, dr);
+    af <<  0, a, 0;
+    bf <<  0, b, 0;
+    cf <<  0, c, 0;
+    df <<  0, d, 0;
+
+
+    body.AddBodyForce(af, ar);
+    body.AddBodyForce(bf, br);
+    body.AddBodyForce(cf, cr);
+    body.AddBodyForce(df, dr);
 
     // total torque
     Vector3f t;
-    t << 0, a + d - (b + c) , 0;
-    Vector3f world_t = m_body.R * t;
-    m_body.AddTorque(world_t);
+    t << 0, a + c - (b + d), 0;
+    Vector3f world_t = body.R * t;
+    body.AddTorque(world_t);
 };
 
 void Quadrotor::draw(){
-    m_body.draw();
-};
-void Quadrotor::update(float dt){
-    m_body.update(dt);
+    float h = 0.2;
+    float w = 0.2;
+    glPushMatrix();
+    glMultMatrixf(body.R, body.x);
+
+    glPushMatrix();
+    Prism(2 * radius, h, w);
+    glPopMatrix();
+
+    glPushMatrix();
+    Prism(w, h, 2 * radius);
+    glPopMatrix();
+
+    glPopMatrix();
 };
 
-void Quadrotor::desire(const Vector3f &position, const Vector3f &direction){
-    Vector3f dx = position - m_body.x;
-    Vector3f forward = m_body.R.col(0);
-    Vector3f up = m_body.R.col(1);
-    cout << "up = " << up << endl;
-    forward.normalize();
-    float dangle = forward.cross(direction)(1);
-    float spin = m_body.omega(1);
-    float speed = m_body.v(1);
+void Quadrotor::update(float dt){
+    body.update(dt);
+};
+
+
+void Quadrotor::desire(const Vector3f &position, const Vector3f &eye){
+    // GOAL: move somewhere and look at something else
+
+    // transform the diff vector into bodyspace coordinates
+    Matrix3f Rt = body.R.transpose();
+    Vector3f dx = position - body.x;
+
+    // tunable params
     float p = 2;
     float d = 0.5;
-    float front = 0.1;
-    float thrust = p * dx(1) + d * (0 - speed);
-    float twist = p * (dangle) + d * (0 - spin);
-    control(thrust + twist + front, thrust - twist - front,
-            thrust - twist + front, thrust + twist - front);
+
+    // first attempt at a "control" vector, though it doesnt work
+    Vector3f c = p * (Rt * dx) - d * (Rt * body.omega) - d * (Rt * body.v);
+
+    // logic control inputs
+    float yaw = 0;
+    float pitch = 0.01;
+    float thrust = 1;
+    float roll = 0.0;
+
+    motors(thrust + yaw + pitch,
+            thrust - yaw + roll,
+            thrust + yaw - pitch,
+            thrust - yaw - roll);
+
 };
+

@@ -19,24 +19,20 @@ GLfloat light_position[] = {10.0, 10.0, 10.0, 0.0};  /* Infinite light location.
 
 
 static vector<RigidBody> bodies;
-static Quadrotor quad = Quadrotor();
-static int t = 0;
+static Quadrotor quad = Quadrotor(1.0);
 static float dt = 0.01;
-static Vector3f direction(0,0,-1.0);
-static Vector3f position(0,7.0,0.0);
+static Vector3f eye(1.0,0.0,0.0);
+static Vector3f position(0.0,4.0,4.0);
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // spin the world just for funs.
-    //glRotatef(0.5,0,1,0);
 
     for (auto it=bodies.begin(); it!=bodies.end(); it++){
         it->update(dt);
         it->draw();
     }
 
-    quad.desire(position, direction);
+    quad.desire(position, eye);
     quad.update(dt);
     quad.draw();
 
