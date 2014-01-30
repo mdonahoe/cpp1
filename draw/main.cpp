@@ -22,6 +22,8 @@ static vector<RigidBody> bodies;
 static Quadrotor quad = Quadrotor();
 static int t = 0;
 static float dt = 0.01;
+static Vector3f direction(0,0,-1.0);
+static Vector3f position(0,7.0,0.0);
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -34,16 +36,9 @@ void display() {
         it->draw();
     }
 
-    Vector3f xaxis = quad.m_body.R.col(0);
-    xaxis.normalize();
-    Vector3f forward(0,0,1);
-    float d = forward.dot(xaxis);
-    cout << "d = " << d << endl;
-    float c = -0.1 * (1 - d);
-    quad.control(1 + c, 1 - c,
-                 1 - c, 1 + c);
-    quad.m_body.draw();
-    quad.m_body.update(dt);
+    quad.desire(position, direction);
+    quad.update(dt);
+    quad.draw();
 
     glutSwapBuffers();
     glutPostRedisplay();

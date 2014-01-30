@@ -4,7 +4,10 @@
 class Quadrotor {
 public:
     Quadrotor();
-    // some sort of control input?
+    void desire(const Vector3f&, const Vector3f&);
+    void update(float);
+    void draw();
+private:
     RigidBody m_body;
     void control(float, float, float, float);
 };
