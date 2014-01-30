@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 
 using namespace Eigen;
 
@@ -49,3 +50,5 @@ private:
 };
 
 Matrix3f Skew(const Vector3f&);
+std::ostream& operator<<(std::ostream &out, Quaternionf &q);
+void glMultMatrixf(const Matrix3f&, const Vector3f&);

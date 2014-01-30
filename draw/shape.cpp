@@ -40,7 +40,6 @@ GLfloat v[8][3] = {
 };
 
 void Cube(){
-    glDisable(GL_LIGHTING);
     for (int i = 0; i < 6; i++) {
         glBegin(GL_QUADS);
         glNormal3fv(&n[i][0]);
@@ -51,5 +50,9 @@ void Cube(){
         glVertex3fv(&v[faces[i][3]][0]);
         glEnd();
     }
-    glEnable(GL_LIGHTING);
+};
+
+void Prism(float length, float height, float width){
+    glScalef(0.5 * length, 0.5 * height, 0.5 * width);
+    Cube();
 };

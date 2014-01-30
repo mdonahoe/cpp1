@@ -1,5 +1,4 @@
 #include "RigidBody.h"
-#include <Eigen/Geometry>
 #include <Eigen/LU>
 #include "shape.h"
 #include "glheaders.h"
@@ -72,34 +71,23 @@ void RigidBody::AddBodyForce(const Vector3f& f, const Vector3f& r){
 
 
 void RigidBody::draw(){
-    GLfloat m[16];
-
-    m[0] = R(0,0);
-    m[1] = R(1,0);
-    m[2] = R(2,0);
-    m[3] = 0.0;
-
-    m[4] = R(0,1);
-    m[5] = R(1,1);
-    m[6] = R(2,1);
-    m[7] = 0.0;
-
-    m[8] = R(0,2);
-    m[9] = R(1,2);
-    m[10] = R(2,2);
-    m[11] = 0.0;
-
-    m[12] = 0.0;
-    m[13] = 0.0;
-    m[14] = 0.0;
-    m[15] = 1.0;
-
     glPushMatrix();
-    glTranslatef(x(0), x(1), x(2));
-    glMultMatrixf(m);
+    glMultMatrixf(R, x);
     Cube();
     glPopMatrix();
 };
+
+
+void RigidBody::renormalize(){
+    // calculate how bad it is?
+
+    // I dont like this... but it seems to work.
+    Quaternionf q(R);
+    q.normalize();
+    R = q.toRotationMatrix();
+};
+
+
 
 /*
  * v(t) = P(t) / M;
@@ -124,11 +112,28 @@ std::ostream& operator<<(std::ostream &out, Quaternionf &q){
 };
 
 
-void RigidBody::renormalize(){
-    // calculate how bad it is
+void glMultMatrixf(const Matrix3f &R, const Vector3f &x){
+    GLfloat m[16];
 
-    // I dont like this... but it seems to work.
-    Quaternionf q(R);
-    q.normalize();
-    R = q.toRotationMatrix();
+    m[0] = R(0,0);
+    m[1] = R(1,0);
+    m[2] = R(2,0);
+    m[3] = 0.0;
+
+    m[4] = R(0,1);
+    m[5] = R(1,1);
+    m[6] = R(2,1);
+    m[7] = 0.0;
+
+    m[8] = R(0,2);
+    m[9] = R(1,2);
+    m[10] = R(2,2);
+    m[11] = 0.0;
+
+    m[12] = x(0);
+    m[13] = x(1);
+    m[14] = x(2);
+    m[15] = 1.0;
+
+    glMultMatrixf(m);
 };
