@@ -71,6 +71,17 @@ void Quadrotor::update(float dt){
 };
 
 
+void Quadrotor::manual(const Vector3f &stick){
+    float thrust = 1;
+    float pitch = stick[0] / 20.0;
+    float roll = stick[2] / 20.0;
+    float yaw = 0;
+    motors(thrust + yaw + pitch,
+           thrust - yaw + roll,
+           thrust + yaw - pitch,
+           thrust - yaw - roll);
+};
+
 void Quadrotor::desire(const Vector3f &position, const Vector3f &eye){
     // GOAL: move somewhere and look at something else
 
@@ -92,9 +103,9 @@ void Quadrotor::desire(const Vector3f &position, const Vector3f &eye){
     float roll = 0.0;
 
     motors(thrust + yaw + pitch,
-            thrust - yaw + roll,
-            thrust + yaw - pitch,
-            thrust - yaw - roll);
+           thrust - yaw + roll,
+           thrust + yaw - pitch,
+           thrust - yaw - roll);
 
 };
 

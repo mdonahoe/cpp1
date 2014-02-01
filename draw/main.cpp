@@ -8,6 +8,7 @@
 #include <cmath>
 #include <vector>
 #include "RigidBody.h"
+#include "Receiver.h"
 #include "Quadrotor.h"
 #include <iostream>
 
@@ -20,6 +21,7 @@ GLfloat light_position[] = {10.0, 10.0, 10.0, 0.0};  /* Infinite light location.
 
 static vector<RigidBody> bodies;
 static Quadrotor quad = Quadrotor(1.0);
+static Receiver rc = Receiver();
 static float dt = 0.01;
 static Vector3f eye(1.0,0.0,0.0);
 static Vector3f position(0.0,4.0,4.0);
@@ -32,7 +34,8 @@ void display() {
         it->draw();
     }
 
-    quad.desire(position, eye);
+    //quad.desire(position, eye);
+    quad.manual(rc.GetControl());
     quad.update(dt);
     quad.draw();
 
@@ -92,6 +95,7 @@ int main(int argc, char **argv) {
     glutCreateWindow("red 3D lighted cube");
     glutDisplayFunc(display);
     init();
+    // also run the other thing in a thread. ugh!
     glutMainLoop();
     return 0;             /* ANSI C requires main to return int. */
 }
